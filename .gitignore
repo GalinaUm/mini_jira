@@ -1,0 +1,21 @@
+# Виртуальное окружение
+.venv/
+
+# Секреты и конфиги с паролями — НИКОГДА в git
+.env
+
+# Кэши Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# Alembic
+alembic/versions/*.pyc
+
+# ОС
+Thumbs.db
+.DS_Store
