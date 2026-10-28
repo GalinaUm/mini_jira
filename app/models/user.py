@@ -25,6 +25,6 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     owned_projects = relationship("Project", foreign_keys="Project.owner_id", back_populates="owner")
-    assigned_tasks = relationship("Task", foreign_keys="Task.assignee_id", back_populates="assignee")
+    assignee_tasks = relationship("Task", foreign_keys="Task.assignee_id", back_populates="assignee")
     created_tasks = relationship("Task", foreign_keys="Task.created_by_id", back_populates="created_by")
     comments = relationship("Comment", back_populates="author")
