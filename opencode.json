@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen3-8b-32k",
+  "watcher": {
+    "ignore": [
+      "**/.idea/**",
+      "**/.venv/**",
+      "**/__pycache__/**",
+      "**/*.pyc"
+    ]
+  }
+}
