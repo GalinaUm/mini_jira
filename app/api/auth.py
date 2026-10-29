@@ -3,7 +3,7 @@ from datetime import timedelta
 from fastapi import Depends, HTTPException, APIRouter, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user
 from app.security import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
@@ -11,17 +11,17 @@ from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse, Token
 
-from app.security import SECRET_KEY, ALGORITHM
 
 router = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    existing = db.execute(
+async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
         select(User).where((User.email == user_data.email) | (User.username == user_data.username))
-    ).scalar_one_or_none()
+    )
+    existing = result.scalar_one_or_none()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -32,16 +32,17 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         full_name=user_data.full_name,
     )
     db.add(user)
-    db.commit()
-    db.refresh(user)
+    await db.commit()
+    await db.refresh(user)
     return user
 
 
 @router.post("/login", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.execute(
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+    result = await (db.execute(
         select(User).where(User.username == form_data.username).limit(1)
-    ).scalar_one_or_none()
+    ))
+    user = result.scalar_one_or_none()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
