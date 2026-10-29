@@ -6,8 +6,7 @@ from sqlalchemy import select
 from app.database import get_db
 from app.models.user import User
 from app.models.project import Project
-from app.schemas.user import UserResponse, UserCreate, Token
-from app.schemas.project import ProjectResponse, ProjectBase, ProjectCreate, ProjectUpdate
+from app.schemas.project import ProjectResponse, ProjectCreate, ProjectUpdate
 from app.deps import get_current_user
 
 router = APIRouter(prefix="/projects", tags=["projects"])
