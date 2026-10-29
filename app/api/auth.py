@@ -12,7 +12,7 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse, Token
 
 
-router = APIRouter(tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -28,7 +28,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     user = User(
         email=user_data.email,
         username=user_data.username,
-        password=get_password_hash(user_data.password),
+        password=get_password_hash(user_data.hashed_password),
         full_name=user_data.full_name,
     )
     db.add(user)
@@ -58,6 +58,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/users/me", response_model=UserResponse)
+@router.get("/me", response_model=UserResponse)
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user

@@ -17,7 +17,7 @@ async def create_project(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    existing_project = await db.scalar(select(Project).where(Project.id == project_in.project_id))
+    existing_project = await db.scalar(select(Project).where(Project.key == project_in.key))
     if existing_project:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Проект с таким ключом (key) уже существует"

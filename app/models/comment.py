@@ -19,7 +19,7 @@ class Comment(Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     task = relationship("Task", back_populates="comments")
     author = relationship("User", back_populates="comments")

@@ -9,7 +9,7 @@ class ProjectBase(BaseModel):
     description: str | None = None
 
 
-class ProjectCreate(BaseModel):
+class ProjectCreate(ProjectBase):
     pass
 
 
@@ -18,7 +18,7 @@ class ProjectUpdate(BaseModel):
     description: str | None = None
 
 
-class ProjectResponse(BaseModel):
+class ProjectResponse(ProjectBase):
     id: uuid.UUID
     owner_id: uuid.UUID
     created_at: datetime

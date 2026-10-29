@@ -29,7 +29,7 @@ class Project(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     owner = relationship("User", foreign_keys=[owner_id], back_populates="owned_projects")
-    members = relationship("User", secondary=project_members, back_populates=None)
+    members = relationship("User", secondary=project_members, back_populates=None, lazy="selectin",)
     tasks = relationship(
         "Task",
         back_populates="project",
