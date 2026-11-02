@@ -1,18 +1,16 @@
-import os
 import jwt
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from pwdlib import PasswordHash
 
 from app.models.user import utcnow
-from dotenv import load_dotenv
+from app.config import get_settings
 
-# Загружаем переменные окружения из файла .env
-load_dotenv()
+settings = get_settings()
 
-# Получаем ключ, а если его нет в .env — используем дефолтный (полезно для локальной разработки)
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback_secret_key_change_me")
-ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 password_hash = PasswordHash.recommended()
 
@@ -27,6 +25,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     if expires_delta:
         expire = utcnow() + expires_delta
     else:
-        expire = utcnow() + timedelta(minutes=15)
+        expire = utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
