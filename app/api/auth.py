@@ -14,21 +14,19 @@ from app.schemas.user import UserCreate, UserResponse, Token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(User).where((User.email == user_data.email) | (User.username == user_data.username))
-    )
-    existing = result.scalar_one_or_none()
-    if existing:
+    if await db.scalar(select(User).where(User.email == user_data.email)) is not None:
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    if await db.scalar(select(User).where(User.username == user_data.username)) is not None:
+        raise HTTPException(status_code=400, detail="Username already taken")
 
     user = User(
         email=user_data.email,
         username=user_data.username,
-        password=get_password_hash(user_data.hashed_password),
+        hashed_password=get_password_hash(user_data.password),
         full_name=user_data.full_name,
     )
     db.add(user)
