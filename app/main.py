@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api import auth, projects
+from app.api import auth, projects, tasks
 from app.config import get_settings
 from app.database import engine
 
@@ -16,6 +16,8 @@ app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.include_router(auth.router)
 app.include_router(projects.router)
+app.include_router(tasks.router)
+
 
 
 @app.get("/health", tags=["health"])

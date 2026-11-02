@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models import Task
 from app.models.project import Project, project_members
 from app.models.user import User
 
@@ -67,3 +68,20 @@ async def ensure_user_is_member(
             detail="Пользователь не является участником проекта",
         )
 
+
+async def get_task_for_user(
+        db: AsyncSession,
+        task_id: uuid.UUID,
+        user: User,
+) -> tuple[Task, Project]:
+    task = await db.scalar(
+        select(Task).where(Task.id == task_id)
+    )
+    if task is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Задача не найдена",
+        )
+
+    project = await get_project_for_user(db, task.project_id, user)
+    return task, project
