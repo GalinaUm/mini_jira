@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, EmailStr
 import uuid
 from datetime import datetime
 
@@ -24,3 +24,7 @@ class ProjectResponse(ProjectBase):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ProjectMemberAdd(ProjectBase):
+    email: EmailStr
